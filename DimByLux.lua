@@ -5,7 +5,7 @@ function onDeviceStateChanged(device, state, stateValue)
 	--print("Device changed %s, %s, %s", device:name(), state, stateValue)
 	if device:name() == "Taklampa" and (state == 1 or state == 16) then
 		print("Set lamp to %s", lastDim)
-		lamp:command("dim", lastDim, "DimByLux.lua")
+		device:command("dim", lastDim, "DimByLux.lua")
 	end
 end
 
