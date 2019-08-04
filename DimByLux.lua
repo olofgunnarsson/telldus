@@ -1,11 +1,14 @@
 local deviceManager = require "telldus.DeviceManager"
-local lastDim = 0
+
+local LUMINANCE = 512
+local SCALE_LUMINANCE_LUX = 1
 
 function onDeviceStateChanged(device, state, stateValue)
 	--print("Device changed %s, %s, %s", device:name(), state, stateValue)
 	if device:name() == "Taklampa" and (state == 1 or state == 16) then
-		print("Set lamp to %s", lastDim)
-		device:command("dim", lastDim, "DimByLux.lua")
+		local lightSensor = deviceManager:findByName("Vardagsrummet")
+		local lux = lightSensor:sensorValue(LUMINANCE , SCALE_LUMINANCE_LUX)
+		dimLamp(device, lux)
 	end
 end
 
@@ -16,16 +19,17 @@ function onSensorValueUpdated(device, valueType, value, scale)
 	local lampState, lampStateValue = lamp:state()
 
 	if device:id() == 8 and (lampState == 1 or lampState == 16) then
-		lastReportedLux = value
-		if value > 1000 then
-			print("Set lamp to 100")
-			lamp:command("dim", 100, "DimByLux.lua")
-			lastDim = 100
-		else
-			local newDim = math.floor(value / 10)
-			print("Set lamp to %s", newDim)
-			lamp:command("dim", newDim, "DimByLux.lua")
-			lastDim = newDim
-		end
+		dimLamp(lamp, value)
+	end
+end
+
+function dimLamp(lamp, value)
+	if value > 1000 then
+		print("Set lamp to 200")
+		lamp:command("dim", 200, "DimByLux.lua")
+	else
+		local newDim = math.floor((value*2) / 10)
+		print("Set lamp to %s", newDim)
+		lamp:command("dim", newDim, "DimByLux.lua")
 	end
 end
