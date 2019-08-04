@@ -7,7 +7,6 @@ local LUMINANCE = 512
 local SCALE_LUMINANCE_LUX = 1
 
 function onDeviceStateChanged(device, state, stateValue)
-	--print("Device changed %s, %s, %s", device:name(), state, stateValue)
 	if device:name() == HUE_LIGHT_GROUP and (state == 1 or state == 16) then
 		local lightSensor = deviceManager:findByName(LIGHT_SENSOR)
 		local lux = lightSensor:sensorValue(LUMINANCE , SCALE_LUMINANCE_LUX)
