@@ -1,24 +1,25 @@
 local deviceManager = require "telldus.DeviceManager"
 
+local LIGHT_SENSOR = "ls"
+local HUE_LIGHT_GROUP = "hlg"
+
 local LUMINANCE = 512
 local SCALE_LUMINANCE_LUX = 1
 
 function onDeviceStateChanged(device, state, stateValue)
 	--print("Device changed %s, %s, %s", device:name(), state, stateValue)
-	if device:name() == "Taklampa" and (state == 1 or state == 16) then
-		local lightSensor = deviceManager:findByName("Vardagsrummet")
+	if device:name() == HUE_LIGHT_GROUP and (state == 1 or state == 16) then
+		local lightSensor = deviceManager:findByName(LIGHT_SENSOR)
 		local lux = lightSensor:sensorValue(LUMINANCE , SCALE_LUMINANCE_LUX)
 		dimLamp(device, lux)
 	end
 end
 
 function onSensorValueUpdated(device, valueType, value, scale)
-	--print("Sensor changed %s, %s, %s, %s", device:name(), valueType, value, scale)
-
-	local lamp = deviceManager:findByName("Taklampa")
+	local lamp = deviceManager:findByName(HUE_LIGHT_GROUP)
 	local lampState, lampStateValue = lamp:state()
 
-	if device:id() == 8 and (lampState == 1 or lampState == 16) then
+	if device:name() == LIGHT_SENSOR and (lampState == 1 or lampState == 16) then
 		dimLamp(lamp, value)
 	end
 end
