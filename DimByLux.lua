@@ -6,8 +6,11 @@ local HUE_LIGHT_GROUP = "hlg"
 local LUMINANCE = 512
 local SCALE_LUMINANCE_LUX = 1
 
+local ON = 1
+local DIMMED = 16
+
 function onDeviceStateChanged(device, state, stateValue)
-	if device:name() == HUE_LIGHT_GROUP and (state == 1 or state == 16) then
+	if device:name() == HUE_LIGHT_GROUP and state == ON then
 		local lightSensor = deviceManager:findByName(LIGHT_SENSOR)
 		local lux = lightSensor:sensorValue(LUMINANCE , SCALE_LUMINANCE_LUX)
 		dimLamp(device, lux)
@@ -18,7 +21,7 @@ function onSensorValueUpdated(device, valueType, value, scale)
 	local lamp = deviceManager:findByName(HUE_LIGHT_GROUP)
 	local lampState, lampStateValue = lamp:state()
 
-	if device:name() == LIGHT_SENSOR and (lampState == 1 or lampState == 16) then
+	if device:name() == LIGHT_SENSOR and (lampState == ON or lampState == DIMMED) then
 		dimLamp(lamp, value)
 	end
 end
